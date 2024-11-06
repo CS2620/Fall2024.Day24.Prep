@@ -5,7 +5,9 @@ from print_palette import print_palette
 from remap import remap
 from nes_palette import nes_palette
 import random
+import time
 
+start_time = time.time()
 
 
 basic_palette = [
@@ -23,14 +25,22 @@ def random_color():
     return (int(random.random()*255),int(random.random()*255),int(random.random()*255))
 
 def color_distance(one, two):
-    return math.sqrt((one[0]-two[0])**2+(one[1]-two[1])**2+(one[2]-two[2])**2)
+    r_diff = one[0] - two[0]
+    g_diff = one[1] - two[1]
+    b_diff = one[2] - two[2]
+
+    return abs(r_diff)+abs(g_diff)+abs(b_diff)
 
 image = Image.open("fish.jpg")
 data = image.load()
 
-entries = get_palette(image, data)
 
-count_clusters = 256
+sampling_probability = 1
+entries = get_palette(image, data, sampling_probability)
+print("Entries in samples " + str(len(entries)))
+print("Total pixels: " + str(image.width * image.height))
+
+count_clusters = 128
 
 cluster_centers = []
 
@@ -42,8 +52,10 @@ for i in range(count_clusters):
 closest_pixels = [[] for i in range(count_clusters)]
 # print(closest_pixels)
 
-for _ in range(2):
-    print("Step")
+total_steps = 2
+
+for step in range(total_steps):
+    print("Starting step: " + str(step+1) + "/" + str(total_steps))
     for pixel in entries:
         min_distance = 100000
         min_index = -1
@@ -79,8 +91,15 @@ for _ in range(2):
         else:
             cluster_centers[i] = random_color()
 
-print(cluster_centers)
+# print(cluster_centers)
 
-remap(image, data, cluster_centers, "fish_kmc_2.png")
+print("Remapping Image")
+filename = "fish_kmc_" + str(count_clusters) + "_" + str(total_steps) + "_" + str(sampling_probability) + ".png"
+print("Remapping to " + filename)
+remap(image, data, cluster_centers, filename)
+
+end_time = time.time()
+
+print("Runtime (s): " + str((end_time-start_time)))
     
 

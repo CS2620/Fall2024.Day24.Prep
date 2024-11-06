@@ -1,0 +1,11 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "type": "austin",
+          "file": "kmeans.py",
+          "args": ["--verbose"],
+          "label": "Profile kmeans.py",
+      }
+  ]
+}

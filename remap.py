@@ -7,7 +7,7 @@ def remap(image, data, palette, filename):
     g_diff = one[1] - two[1]
     b_diff = one[2] - two[2]
 
-    return math.sqrt(r_diff**2+g_diff**2+b_diff**2)
+    return abs(r_diff)+abs(g_diff)+abs(b_diff)
 
   for y in range(image.height):
     for x in range(image.width):
