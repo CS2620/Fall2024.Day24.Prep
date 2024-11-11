@@ -3,6 +3,7 @@ import math
 from get_palette import get_palette
 from print_palette import print_palette
 from remap import remap
+from remap import remap_dither
 from nes_palette import nes_palette
 import random
 import time
@@ -12,10 +13,10 @@ start_time = time.time()
 
 basic_palette = [
   (0,0,0),
-  (64, 64, 64), 
-  (128, 128, 128),
-  (192, 192, 192),
   (255,255,255),
+  (128, 128, 128),
+  (64, 64, 64), 
+  (192, 192, 192),
   (255, 0, 0),
   (0, 255, 0),
   (0, 0, 255),
@@ -32,8 +33,17 @@ def nes_random_color():
     next_random_color %= len(nes_palette)
     return nes_palette[next_random_color]
 
+def basic_random_color():
+    global next_random_color
+    next_random_color += 1
+    next_random_color %= len(basic_palette)
+    return basic_palette[next_random_color]
+
+
 def random_color():
   return true_random_color()
+#   return basic_random_color()
+#   return nes_random_color()
 
 
 def color_distance(one, two):
@@ -65,7 +75,7 @@ for i in range(count_clusters):
 closest_pixels = [[] for i in range(count_clusters)]
 # print(closest_pixels)
 
-total_steps = 2
+total_steps = 3
 
 for step in range(total_steps):
     print("Starting step: " + str(step+1) + "/" + str(total_steps))
@@ -131,7 +141,7 @@ for step in range(total_steps):
 print("Remapping Image")
 filename = "fish_kmc_" + str(count_clusters) + "_" + str(total_steps) + "_" + str(sampling_probability) + "_triangle.png"
 print("Remapping to " + filename)
-remap(image, data, cluster_centers, filename)
+remap_dither(image, data, cluster_centers, filename)
 
 end_time = time.time()
 
