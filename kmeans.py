@@ -75,7 +75,7 @@ for i in range(count_clusters):
 closest_pixels = [[] for i in range(count_clusters)]
 # print(closest_pixels)
 
-total_steps = 1
+total_steps = 2
 
 for step in range(total_steps):
     print("Starting step: " + str(step+1) + "/" + str(total_steps))

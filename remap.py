@@ -55,7 +55,7 @@ def remap_dither(image, data, palette, filename):
     for x in range(image.width):
       column = []
       for y in range(image.height):
-        column.append(0)
+        column.append((0,0,0))
       errors.append(column)
        
 
@@ -65,7 +65,8 @@ def remap_dither(image, data, palette, filename):
       error_b = 0
       for x in range(image.width):
         pixel = data[x,y]
-        current_color = (pixel[0] - error_r, pixel[1] - error_g, pixel[2] - error_b)
+        error = errors[x][y]
+        current_color = (pixel[0] - error[0], pixel[1] - error[1], pixel[2] - error[2])
         min_distance = 442000
         min_index = 0
         for i,color in enumerate(palette):
@@ -88,6 +89,21 @@ def remap_dither(image, data, palette, filename):
         error_r = this_error_r
         error_g = this_error_g
         error_b = this_error_b
+
+        error_quartered_r = error_r * .25
+        error_quartered_g = error_g * .25
+        error_quartered_b = error_b * .25
+        error_quartered = (error_quartered_r, error_quartered_g, error_quartered_b)
+
+        offsets = [(1,0), (-1, 1), (0, 1), (1,1)]
+        for offset in offsets:
+          new_x, new_y = x + offset[0], y + offset[1]
+          if new_x < 0 or new_x >= image.width or new_y < 0 or new_y >= image.height:
+            continue
+          old_error = errors[new_x][new_y]
+          new_error = (old_error[0] + error_quartered[0], old_error[1] + error_quartered[1], old_error[2] + error_quartered[2])
+          errors[new_x][new_y] = new_error
+        
 
         data[x,y] = palette[min_index]
 
