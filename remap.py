@@ -10,15 +10,6 @@ def color_distance(one, two):
 
 def remap(image, data, palette, filename):
 
-  print("Building cluster distance matrix")
-  palette_distances = []
-  for color1 in palette:
-      row = []
-      for color2 in palette:
-          distance = color_distance(color1, color2)
-          row.append(distance)
-      palette_distances.append(row)
-
   
   for y in range(image.height):
     for x in range(image.width):
@@ -26,9 +17,6 @@ def remap(image, data, palette, filename):
       min_distance = 442
       min_index = 0
       for i,color in enumerate(palette):
-        palette_distance = palette_distances[min_index][i]
-        if palette_distance > min_distance * 2:
-           continue
 
         distance = color_distance(color, pixel)
         if distance < min_distance:

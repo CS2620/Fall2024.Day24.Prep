@@ -75,7 +75,8 @@ closest_pixels = [[] for i in range(count_clusters)]
 total_steps = 2
 
 for step in range(total_steps):
-    print("Starting step: " + str(step+1) + "/" + str(total_steps))
+    print("Starting step: " + str(step+1) + "/" + str(total_steps), end="\r")
+    
 
     for pixel in entries:
         min_distance = 4420
@@ -111,10 +112,10 @@ for step in range(total_steps):
         else:
             cluster_centers[i] = random_color()
 
-if(len(cluster_centers) <= 8):
+if(len(cluster_centers) <= 0):
     print(cluster_centers)
 
-print("Remapping Image")
+print("Remapping Image", end="\r")
 filename = "fish_kmc_" + str(count_clusters) + "_" + str(total_steps) + "_" + str(sampling_probability) + "_triangle.png"
 print("Remapping to " + filename)
 remap(image, data, cluster_centers, filename)
