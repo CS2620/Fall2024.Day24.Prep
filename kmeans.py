@@ -1,9 +1,7 @@
 from PIL import Image
 import math
 from get_palette import get_palette
-from print_palette import print_palette
 from remap import remap
-from remap import remap_dither
 from nes_palette import nes_palette
 import random
 import time
@@ -41,9 +39,9 @@ def basic_random_color():
 
 
 def random_color():
-  return true_random_color()
+    return true_random_color()
 #   return basic_random_color()
-#   return nes_random_color()
+    # return nes_random_color()
 
 
 def color_distance(one, two):
@@ -51,7 +49,6 @@ def color_distance(one, two):
     g_diff = one[1] - two[1]
     b_diff = one[2] - two[2]
 
-    # return abs(r_diff)+abs(g_diff)+abs(b_diff)
     return math.sqrt((r_diff)**2+(g_diff)**2+(b_diff)**2)
 
 image = Image.open("fish.jpg")
@@ -60,17 +57,17 @@ data = image.load()
 
 sampling_probability = 1
 entries = get_palette(image, data, sampling_probability)
-print("Entries in samples " + str(len(entries)))
-print("Total pixels: " + str(image.width * image.height))
+# print("Entries in samples " + str(len(entries)))
+# print("Total pixels: " + str(image.width * image.height))
 
-count_clusters = 256
+count_clusters = 8
 
 cluster_centers = []
 
 for i in range(count_clusters):
     cluster_centers.append(random_color())
     
-# print(cluster_centers)
+#print(cluster_centers)
 
 closest_pixels = [[] for i in range(count_clusters)]
 # print(closest_pixels)
@@ -80,29 +77,11 @@ total_steps = 2
 for step in range(total_steps):
     print("Starting step: " + str(step+1) + "/" + str(total_steps))
 
-    print("Building cluster distance matrix")
-    cluster_distances = []
-    for i in range(count_clusters):
-        row = []
-        for j in range(count_clusters):
-            distance = color_distance(cluster_centers[i], cluster_centers[j])
-            row.append(distance)
-        cluster_distances.append(row)
-    print("Done building cluster distance matrix")
-    
-    # print(cluster_distances)
-
-    skips = 0
-
     for pixel in entries:
-        min_distance = 442
+        min_distance = 4420
         min_index = 0
         for i in range(count_clusters):
-            #Check triangle inequality
-            cluster_distance = cluster_distances[min_index][i]
-            if cluster_distance  > min_distance*2:
-                skips += 1
-                continue
+            
 
             center = cluster_centers[i]
             distance = color_distance(pixel[0], center)
@@ -111,10 +90,6 @@ for step in range(total_steps):
                 min_index = i
         closest_pixels[min_index].append(pixel)
         
-    print("Skips: " + str(skips))
-    # print(closest_pixels[0][:10])
-
-    # Update the pixel centers
             
     for i in range(count_clusters):
         sum_r = 0
@@ -136,12 +111,13 @@ for step in range(total_steps):
         else:
             cluster_centers[i] = random_color()
 
-# print(cluster_centers)
+if(len(cluster_centers) <= 8):
+    print(cluster_centers)
 
 print("Remapping Image")
 filename = "fish_kmc_" + str(count_clusters) + "_" + str(total_steps) + "_" + str(sampling_probability) + "_triangle.png"
 print("Remapping to " + filename)
-remap_dither(image, data, cluster_centers, filename)
+remap(image, data, cluster_centers, filename)
 
 end_time = time.time()
 
